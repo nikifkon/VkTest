@@ -50,6 +50,8 @@ public class UserService : IUserService
         {
             return (null, "Login has already taken");
         }
+
+        await Task.Delay(5000);
         return (user, "");
     }
 
