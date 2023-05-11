@@ -5,10 +5,12 @@ namespace VkApi;
 public class UserService : IUserService
 {
     private readonly UserContext _dbContext;
+    private readonly IPasswordService _passwordService;
     
-    public UserService(UserContext dbContext)
+    public UserService(UserContext dbContext, IPasswordService passwordService)
     {
         _dbContext = dbContext;
+        _passwordService = passwordService;
     }
     
     public async Task<IList<User>> GetAll()
@@ -32,7 +34,8 @@ public class UserService : IUserService
                 return (null, "Admin has already created and must be single");
             }
         }
-        
+
+        user.Password = _passwordService.Encrypt(user.Password!);
         var defaultUserGroup = await _dbContext.UserGroups.Where(group => group.Code == GroupCode.User).FirstAsync();
         var defaultUserState = await _dbContext.UserStates.Where(state => state.Code == StateCode.Active).FirstAsync();
         user.State = defaultUserState;
