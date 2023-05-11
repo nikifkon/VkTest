@@ -45,5 +45,21 @@ public class UserContext : DbContext
 
     public UserContext(DbContextOptions<UserContext> options) : base(options)
     {
+        Database.EnsureCreated();
+    }
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<UserGroup>()
+            .HasData(new UserGroup() { Id = 1, Code = GroupCode.Admin, Description = "This is admin user group" },
+                new UserGroup() { Id = 2, Code = GroupCode.User, Description = "" });
+        
+        modelBuilder.Entity<UserState>()
+            .HasData(new UserState() { Id = 1, Code = StateCode.Active, Description = "Active user" },
+                new UserState() { Id = 2, Code = StateCode.Blocked, Description = "Deleted user" });
+
+        modelBuilder.Entity<User>()
+            .HasIndex(user => user.Login)
+            .IsUnique();
     }
 }
